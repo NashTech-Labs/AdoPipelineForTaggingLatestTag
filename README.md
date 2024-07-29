@@ -1,4 +1,4 @@
-# Azure DevOps Pipeline for Building and Tagging "Latest-tag" and then Pushing Docker Images to ACR
+# Azure DevOps Pipeline for Building, Tagging with Latest, and Pushing Docker Images to ACR
 
 This repository contains an Azure DevOps pipeline configuration for building a Docker image, tagging it with the build number and `latest`, and pushing it to an Azure Container Registry (ACR).
 
