@@ -1,0 +1,37 @@
+trigger:
+- main  # or the branch you want to trigger the build on
+
+variables:
+  imageName: your-image-name  # Replace with your image name
+  acrName: your-acr-name  # Replace with your ACR name
+  buildId: $(Build.BuildId)
+
+stages:
+- stage: BuildAndPush
+  displayName: Build and Push Docker Image
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: DockerInstaller@0
+      displayName: Install Docker
+
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'YourServiceConnection'  # Replace with your service connection name
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az acr login --name $(acrName)
+
+    - script: |
+        docker build -t $(acrName).azurecr.io/$(imageName):$(buildId) .
+        docker tag $(acrName).azurecr.io/$(imageName):$(buildId) $(acrName).azurecr.io/$(imageName):latest
+      displayName: Build Docker Image
+
+    - script: |
+        docker push $(acrName).azurecr.io/$(imageName):$(buildId)
+        docker push $(acrName).azurecr.io/$(imageName):latest
+      displayName: Push Docker Image
